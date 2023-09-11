@@ -10,8 +10,12 @@ $ npm install
 
 ## Extended Libraries
 ```bash
+# Auth
 npm install --save @nestjs/passport @nestjs/jwt passport passport-local passport-jwt
 npm install --save-dev @types/passport-local @types/passport-jwt
+
+# Store
+npm install --save typeorm typeorm-seeding reflect-metadata sqlite3
 ```
 
 ## Running the app
