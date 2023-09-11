@@ -15,7 +15,7 @@ npm install --save @nestjs/passport @nestjs/jwt passport passport-local passport
 npm install --save-dev @types/passport-local @types/passport-jwt
 
 # Store
-npm install --save typeorm typeorm-seeding reflect-metadata sqlite3
+npm install --save @nestjs/typeorm typeorm typeorm-extension reflect-metadata sqlite3
 ```
 
 ## Running the app

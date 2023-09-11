@@ -1,8 +1,8 @@
-import { define } from 'typeorm-seeding'
+import { setSeederFactory } from 'typeorm-extension'
 import { faker } from '@faker-js/faker'
 import { User } from '../../entities/user.entity'
 
-define(User, () => {
+export default setSeederFactory(User, () => {
 	const user = new User()
 	const firstName = faker.person.firstName('male')
 	const lastName = faker.person.lastName('male')
