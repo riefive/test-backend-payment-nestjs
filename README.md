@@ -22,7 +22,7 @@ npm install --save @nestjs/typeorm typeorm typeorm-extension reflect-metadata sq
 
 ```bash
 # development
-$ npm run migration:seed
+$ npm run seed:run
 $ npm run start
 
 # watch mode
