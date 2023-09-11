@@ -22,6 +22,7 @@ npm install --save typeorm typeorm-seeding reflect-metadata sqlite3
 
 ```bash
 # development
+$ npm run migration:seed
 $ npm run start
 
 # watch mode
