@@ -10,7 +10,6 @@ export class LocalStrategy extends PassportStrategy(Strategy, 'local') {
 	}
 
 	async validate(req: Request): Promise<any> {
-		console.log(req)
 		return req
 	}
 }
