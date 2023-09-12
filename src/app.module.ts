@@ -14,8 +14,8 @@ import config from './configs/configuration'
 			load: [config]
 		}),
 		TypeOrmModule.forRoot(dataConfig),
-		UserModule,
-		AuthModule
+		AuthModule,
+		UserModule
 	],
 	controllers: [AppController],
 	providers: [AppService]

@@ -11,9 +11,14 @@ async function bootstrap() {
 		.setDescription('The Mini Payment API description')
 		.setVersion('1.0')
 		.addTag('minipayment')
+		.addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT', name: 'JWT', description: 'Enter JWT token', in: 'header' }, 'JWT-auth')
 		.build()
 	const document = SwaggerModule.createDocument(app, config)
-	SwaggerModule.setup('api', app, document)
+	SwaggerModule.setup('api', app, document, {
+		swaggerOptions: {
+			persistAuthorization: true
+		}
+	})
 
 	app.useGlobalPipes(
 		new ValidationPipe({

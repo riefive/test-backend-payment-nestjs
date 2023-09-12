@@ -12,8 +12,8 @@ export class UserService {
 		private userRepository: Repository<UserObject>
 	) {}
 
-	findOne(email: string): Promise<UserObject | any> {
-		const user: any = this.userRepository.findOneBy({ email })
+	async findOne(email: string): Promise<UserObject | null> {
+		const user: any = await this.userRepository.findOneBy({ email: email ?? null })
 		if (user) delete user.password
 		return user
 	}

@@ -8,8 +8,9 @@ export class AuthService {
 
 	async login(user: any) {
 		const payloads = {
+			userid: user.id,
 			username: user.name,
-			sub: user.userId,
+			email: user.email,
 			roles: [user.role]
 		}
 		return {
