@@ -6,6 +6,10 @@
 $ git clone https://github.com/nestjs/typescript-starter.git [project_name]
 $ cd [project_name]
 $ npm install
+
+# Generate Random Key
+$ node -e "console.log(require('crypto').randomBytes(15).toString('hex'))"
+# Copy the result and then save to "JWT_KEY" at .env
 ```
 
 ## Extended Libraries
@@ -43,6 +47,12 @@ $ npm run test:e2e
 
 # test coverage
 $ npm run test:cov
+```
+
+## Test Api
+```
+- Account Admin: { email: user_admin@sample.dev, password: admin1234 }
+- Account User: { email: user_common@sample.dev, password: common1234 }
 ```
 
 ## License

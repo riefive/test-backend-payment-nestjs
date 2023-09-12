@@ -8,17 +8,18 @@ export default class UserSeeder implements Seeder {
 	public async run(dataSource: DataSource, factoryManager: SeederFactoryManager): Promise<any> {
 		const userRepository = dataSource.getRepository(User)
 
+		const salt = bcrypt.genSaltSync(10)
 		await userRepository.createQueryBuilder().delete().from(User).where('name is not null').execute()
 		await userRepository.save({
 			name: 'Admin Utama',
 			email: 'user_admin@sample.dev',
-			password: await bcrypt.hash('admin1234', 10),
+			password: bcrypt.hashSync('admin1234', salt),
 			role: UserRole.ADMIN
 		})
 		await userRepository.save({
 			name: 'Pengguna Utama',
 			email: 'user_common@sample.dev',
-			password: await bcrypt.hash('common1234', 10),
+			password: bcrypt.hashSync('common1234', salt),
 			role: UserRole.USER
 		})
 
