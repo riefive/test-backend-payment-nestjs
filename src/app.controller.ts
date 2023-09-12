@@ -11,8 +11,8 @@ export class AppController {
 		return this.appService.getHello()
 	}
 
-	@Get('test')
-	getTest(): any {
+	@Get('finduser')
+	getFindUser(): any {
 		return this.userService.findOne('user_admin@sample.dev')
 	}
 }
