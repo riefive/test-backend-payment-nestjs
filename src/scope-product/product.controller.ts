@@ -4,7 +4,8 @@ import { Roles } from '../middlewares/meta.role'
 import { JwtAuthGuard } from '../middlewares/guard.jwt'
 import { RolesGuard } from '../middlewares/guard.role'
 import { UserRole } from '../enums/user-role.enum'
-import { ProductEditObject, ProductQueryObject, ProductListObject } from '../data-objects/product.object'
+import { ParamObject } from '../data-objects/_object'
+import { ProductEditObject, ProductListObject } from '../data-objects/product.object'
 import { ProductService } from './product.service'
 
 @Controller()
@@ -19,7 +20,7 @@ export class ProductController {
 	}
 
 	@Get('product/:id')
-	async getProductId(@Param() params: ProductQueryObject) {
+	async getProductId(@Param() params: ParamObject) {
 		const id = params.id || null
 		return await this.productService.findOne(id)
 	}
@@ -36,7 +37,7 @@ export class ProductController {
 	@Roles(UserRole.ADMIN)
 	@UseGuards(JwtAuthGuard, RolesGuard)
 	@ApiBearerAuth('JWT-auth')
-	async editProduct(@Param() params: ProductQueryObject, @Body() data: ProductEditObject) {
+	async editProduct(@Param() params: ParamObject, @Body() data: ProductEditObject) {
 		const id = params.id || null
 		return await this.productService.update(id, data)
 	}
@@ -45,7 +46,7 @@ export class ProductController {
 	@Roles(UserRole.ADMIN)
 	@UseGuards(JwtAuthGuard, RolesGuard)
 	@ApiBearerAuth('JWT-auth')
-	async removeProduct(@Param() params: ProductQueryObject) {
+	async removeProduct(@Param() params: ParamObject) {
 		const id = params.id || null
 		return await this.productService.delete(id)
 	}

@@ -10,11 +10,6 @@ export interface ProductObject {
 	image: string
 }
 
-export class ProductQueryObject {
-	@ApiProperty()
-	id: string
-}
-
 export class ProductListObject {
 	@ApiProperty({ required: false })
 	name: string

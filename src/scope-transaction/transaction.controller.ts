@@ -1,9 +1,10 @@
-import { Controller, Get, Post, Body, Req, UseGuards } from '@nestjs/common'
+import { Controller, Get, Post, Body, Req, Param, UseGuards } from '@nestjs/common'
 import { ApiBearerAuth, ApiQuery } from '@nestjs/swagger'
 import { Roles } from '../middlewares/meta.role'
 import { JwtAuthGuard } from '../middlewares/guard.jwt'
 import { RolesGuard } from '../middlewares/guard.role'
 import { UserRole } from '../enums/user-role.enum'
+import { ParamObject } from '../data-objects/_object'
 import { TransactionBuyObject, TransactionPaymentObject, TranasctionQueryObject } from '../data-objects/transaction.object'
 import { TransactionService } from './transaction.service'
 
@@ -19,6 +20,15 @@ export class TransactionController {
 	async getHistory(@Req() req: any) {
 		const queries = req.query || {}
 		return await this.transactionService.findAll({ ...queries, user: req.user?.userid })
+	}
+
+	@Get('detail/:id')
+	@Roles(UserRole.USER)
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@ApiBearerAuth('JWT-auth')
+	async getDetail(@Req() req: any, @Param() params: ParamObject) {
+		const id = params.id || null
+		return await this.transactionService.findOne(id)
 	}
 
 	@Post('buying')
