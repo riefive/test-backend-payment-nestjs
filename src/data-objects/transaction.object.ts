@@ -22,3 +22,14 @@ export class TransactionPaymentObject {
 	@ApiProperty()
 	is_paid: number
 }
+
+export class TranasctionQueryObject {
+	@ApiProperty({ required: false })
+	product: string
+
+	@ApiProperty({ default: 1 })
+	page: number
+
+	@ApiProperty({ default: 10 })
+	limit: number
+}

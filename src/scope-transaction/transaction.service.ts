@@ -1,6 +1,7 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
+import { differenceOfTwoDate } from '../helpers/util.timer'
 import { Transaction } from '../entities/transaction.entity'
 
 @Injectable()
@@ -25,12 +26,26 @@ export class TransactionService {
 	}
 
 	async findOne(id: string): Promise<any | null> {
-		const product: any = await this.transactionRepository.findOneBy({ id })
-		return product
+		const trans: any = await this.transactionRepository.findOneBy({ id })
+		return trans
 	}
 
 	async create(data: any): Promise<any | null> {
 		try {
+			const trans: any = await this.transactionRepository.findOneBy({ user_id: data.user_id, product_id: data.product_id })
+			if (trans) {
+				const diff = differenceOfTwoDate(new Date(), trans.created_at, 'minute')
+				if (diff < 300) {
+					throw new HttpException(
+						{
+							status: HttpStatus.CONFLICT,
+							error: 'Duplicate transaction'
+						},
+						HttpStatus.CONFLICT,
+						{ cause: 'Duplicate recored' }
+					)
+				}
+			}
 			if (data.price) {
 				data.total = Number(data.price) * Number(data.quantity)
 			}
