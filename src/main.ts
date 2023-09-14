@@ -7,6 +7,7 @@ import { AppModule } from './app.module'
 async function bootstrap() {
 	const app = await NestFactory.create<NestExpressApplication>(AppModule)
 
+	// swagger
 	const config = new DocumentBuilder()
 		.setTitle('Mini Payment')
 		.setDescription('The Mini Payment API description')
@@ -15,12 +16,25 @@ async function bootstrap() {
 		.addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT', name: 'JWT', description: 'Enter JWT token', in: 'header' }, 'JWT-auth')
 		.build()
 	const document = SwaggerModule.createDocument(app, config)
-	SwaggerModule.setup('api', app, document, {
+	SwaggerModule.setup('open-api', app, document, {
 		swaggerOptions: {
 			persistAuthorization: true
 		}
 	})
 
+	const whitelist = ['http://localhost:3000']
+	app.enableCors({
+		origin: function (origin, callback) {
+			if (whitelist.indexOf(origin) !== -1) {
+				callback(null, true)
+			} else {
+				callback(new Error('Not allowed by CORS'))
+			}
+		},
+		allowedHeaders: 'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept, Observe',
+		methods: 'GET,PUT,POST,DELETE,UPDATE,OPTIONS',
+		credentials: true
+	})
 	app.disable('x-powered-by', 'X-Powered-By')
 	app.useGlobalPipes(
 		new ValidationPipe({
