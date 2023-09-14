@@ -15,7 +15,6 @@ export default class UserSeeder implements Seeder {
 			password: bcrypt.hashSync('admin1234', 10),
 			role: UserRole.ADMIN
 		})
-		console.log(bcrypt.hashSync('admin1234', 10))
 		await userRepository.save({
 			name: 'Pengguna Utama',
 			email: 'user_common@sample.dev',
