@@ -18,7 +18,7 @@ export class TransactionController {
 	@ApiBearerAuth('JWT-auth')
 	async getHistory(@Req() req: any) {
 		const queries = req.query || {}
-		return await this.transactionService.findAll({ ...queries, user: req.user?.id })
+		return await this.transactionService.findAll({ ...queries, user: req.user?.userid })
 	}
 
 	@Post('buying')
@@ -26,7 +26,7 @@ export class TransactionController {
 	@UseGuards(JwtAuthGuard, RolesGuard)
 	@ApiBearerAuth('JWT-auth')
 	async postBuy(@Req() req: any, @Body() data: TransactionBuyObject) {
-		return await this.transactionService.create({ ...data, user_id: req.user?.id || null })
+		return await this.transactionService.create({ ...data, user_id: req.user?.userid || null })
 	}
 
 	@Post('payment')

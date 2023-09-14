@@ -33,14 +33,7 @@ export class ProductService {
 		try {
 			return await this.productRepository.save(this.productRepository.create(data))
 		} catch (error) {
-			throw new HttpException(
-				{
-					status: HttpStatus.BAD_REQUEST,
-					error: error.toString()
-				},
-				HttpStatus.BAD_REQUEST,
-				{ cause: error }
-			)
+			throw new HttpException({ status: HttpStatus.BAD_REQUEST, error: error.toString() }, HttpStatus.BAD_REQUEST, { cause: error })
 		}
 	}
 

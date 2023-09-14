@@ -3,12 +3,14 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 import { differenceOfTwoDate } from '../helpers/util.timer'
 import { Transaction } from '../entities/transaction.entity'
+import { ProductService } from '../scope-product/product.service'
 
 @Injectable()
 export class TransactionService {
 	constructor(
 		@InjectRepository(Transaction)
-		private transactionRepository: Repository<any>
+		private transactionRepository: Repository<any>,
+		private productService: ProductService
 	) {}
 
 	async findAll(params: any): Promise<any | null> {
@@ -32,34 +34,36 @@ export class TransactionService {
 
 	async create(data: any): Promise<any | null> {
 		try {
+			console.log(data)
+			const product: any = await this.productService.findOne(data.product_id)
+			if (!product || Number(data.quantity) < 1) {
+				throw new Error(HttpStatus.UNPROCESSABLE_ENTITY.toString())
+			}
 			const trans: any = await this.transactionRepository.findOneBy({ user_id: data.user_id, product_id: data.product_id })
 			if (trans) {
-				const diff = differenceOfTwoDate(new Date(), trans.created_at, 'minute')
-				if (diff < 300) {
-					throw new HttpException(
-						{
-							status: HttpStatus.CONFLICT,
-							error: 'Duplicate transaction'
-						},
-						HttpStatus.CONFLICT,
-						{ cause: 'Duplicate recored' }
-					)
+				const diff = differenceOfTwoDate(trans.created_at, new Date(), 'minute')
+				if (diff < 15) {
+					throw new Error(HttpStatus.CONFLICT.toString())
 				}
 			}
-			if (data.price) {
-				data.total = Number(data.price) * Number(data.quantity)
+			if (data.price || product.price) {
+				data.total = Number(data.price || product.price) * Number(data.quantity)
 			}
 			data.expired_at = new Date(new Date().getTime() + 1 * 24 * 60 * 60 * 1000)
 			return await this.transactionRepository.save(this.transactionRepository.create(data))
 		} catch (error) {
-			throw new HttpException(
-				{
-					status: HttpStatus.BAD_REQUEST,
-					error: error.toString()
-				},
-				HttpStatus.BAD_REQUEST,
-				{ cause: error }
-			)
+			let errorCode: any = HttpStatus.INTERNAL_SERVER_ERROR
+			let errorMessage = error.toString() || 'Internal Server Error'
+			const errorString = error.toString()
+			if (errorString === 'Error: 409') {
+				errorCode = HttpStatus.CONFLICT
+				errorMessage = 'Duplicate transaction'
+			}
+			if (errorString === 'Error: 422') {
+				errorCode = HttpStatus.UNPROCESSABLE_ENTITY
+				errorMessage = 'Attributes not valid'
+			}
+			throw new HttpException({ status: errorCode, error: errorMessage }, errorCode, { cause: error })
 		}
 	}
 
