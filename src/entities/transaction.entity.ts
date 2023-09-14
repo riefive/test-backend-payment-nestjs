@@ -16,4 +16,7 @@ export class Transaction {
 
 	@Column()
 	total: number
+
+	@Column({ default: false })
+	isPaid: boolean
 }

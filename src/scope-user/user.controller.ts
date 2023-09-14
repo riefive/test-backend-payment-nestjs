@@ -7,9 +7,9 @@ import { UserService } from './user.service'
 export class UserController {
 	constructor(private userService: UserService) {}
 
+	@Get('user/profile')
 	@UseGuards(JwtAuthGuard)
 	@ApiBearerAuth('JWT-auth')
-	@Get('user/profile')
 	async getProfile(@Req() req: any) {
 		const user = req.user
 		const email = user.email

@@ -1,10 +1,10 @@
 import { Controller, Get, Post, Put, Delete, Body, Req, Param, UseGuards } from '@nestjs/common'
-import { ApiBearerAuth } from '@nestjs/swagger'
+import { ApiBearerAuth, ApiQuery } from '@nestjs/swagger'
 import { Roles } from '../middlewares/meta.role'
 import { JwtAuthGuard } from '../middlewares/guard.jwt'
 import { RolesGuard } from '../middlewares/guard.role'
 import { UserRole } from '../enums/user-role.enum'
-import { ProductEditObject, ProductQueryObject } from '../data-objects/product.object'
+import { ProductEditObject, ProductQueryObject, ProductListObject } from '../data-objects/product.object'
 import { ProductService } from './product.service'
 
 @Controller()
@@ -12,6 +12,7 @@ export class ProductController {
 	constructor(private productService: ProductService) {}
 
 	@Get('products')
+	@ApiQuery({ type: ProductListObject })
 	async getProducts(@Req() req: any) {
 		const queries = req.query || {}
 		return await this.productService.findAll(queries)
@@ -23,27 +24,27 @@ export class ProductController {
 		return await this.productService.findOne(id)
 	}
 
+	@Post('product')
 	@Roles(UserRole.ADMIN)
 	@UseGuards(JwtAuthGuard, RolesGuard)
 	@ApiBearerAuth('JWT-auth')
-	@Post('product')
-	async addProduct(@Body() data: any) {
+	async addProduct(@Body() data: ProductEditObject) {
 		return await this.productService.create(data)
 	}
 
+	@Put('product/:id')
 	@Roles(UserRole.ADMIN)
 	@UseGuards(JwtAuthGuard, RolesGuard)
 	@ApiBearerAuth('JWT-auth')
-	@Put('product/:id')
 	async editProduct(@Param() params: ProductQueryObject, @Body() data: ProductEditObject) {
 		const id = params.id || null
 		return await this.productService.update(id, data)
 	}
 
+	@Delete('product/:id')
 	@Roles(UserRole.ADMIN)
 	@UseGuards(JwtAuthGuard, RolesGuard)
 	@ApiBearerAuth('JWT-auth')
-	@Delete('product/:id')
 	async removeProduct(@Param() params: ProductQueryObject) {
 		const id = params.id || null
 		return await this.productService.delete(id)
