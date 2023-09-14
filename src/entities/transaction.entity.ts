@@ -12,9 +12,6 @@ export class Transaction {
 	product_id: string
 
 	@Column()
-	price: number
-
-	@Column()
 	quantity: number
 
 	@Column()
