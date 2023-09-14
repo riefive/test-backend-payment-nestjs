@@ -12,17 +12,20 @@ export class Transaction {
 	product_id: string
 
 	@Column()
-	quanity: number
+	quantity: number
 
 	@Column()
 	total: number
 
 	@Column({ default: false })
-	isPaid: boolean
+	is_paid: boolean
 
 	@CreateDateColumn()
 	created_at: Date
 
 	@UpdateDateColumn()
 	updated_at: Date
+
+	@Column()
+	expired_at: Date
 }

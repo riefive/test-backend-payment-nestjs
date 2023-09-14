@@ -6,6 +6,7 @@ import { AppService } from './app.service'
 import { AuthModule } from './scope-auth/auth.module'
 import { ProductModule } from './scope-product/product.module'
 import { UserModule } from './scope-user/user.module'
+import { TransactionModule } from './scope-transaction/transaction.module'
 import { dataConfig } from './database/data-source'
 import config from './configs/configuration'
 
@@ -17,7 +18,8 @@ import config from './configs/configuration'
 		TypeOrmModule.forRoot(dataConfig),
 		AuthModule,
 		ProductModule,
-		UserModule
+		UserModule,
+		TransactionModule
 	],
 	controllers: [AppController],
 	providers: [AppService]
