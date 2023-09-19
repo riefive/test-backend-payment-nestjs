@@ -49,8 +49,6 @@ export class TransactionController {
 	@UseGuards(JwtAuthGuard, RolesGuard)
 	@ApiBearerAuth('JWT-auth')
 	async postPayment(@Body() data: TransactionPaymentObject) {
-		const id = data?.id || ''
-		const payloads = { is_paid: data?.is_paid || false, updated_at: new Date() }
-		return await this.transactionService.update(id, payloads)
+		return await this.transactionService.savePayment(data)
 	}
 }

@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 import { differenceOfTwoDate } from '../helpers/util.timer'
 import { Transaction } from '../entities/transaction.entity'
+import { Payment } from '../entities/payment.entity'
 import { ProductService } from '../scope-product/product.service'
 import { Snap } from 'midtrans-client'
 import config from '../configs/configuration'
@@ -12,8 +13,8 @@ export class TransactionService {
 	private snapService
 
 	constructor(
-		@InjectRepository(Transaction)
-		private transactionRepository: Repository<any>,
+		@InjectRepository(Transaction) private transactionRepository: Repository<any>,
+		@InjectRepository(Payment) private paymentRepository: Repository<any>,
 		private productService: ProductService
 	) {
 		const configs = config()
@@ -69,6 +70,7 @@ export class TransactionService {
 				data.total = Number(data.price || product.price) * Number(data.quantity)
 			}
 			data.expired_at = new Date(new Date().getTime() + 1 * 24 * 60 * 60 * 1000)
+			data.payment_status = 0
 			const result = await this.transactionRepository.save(this.transactionRepository.create(data))
 			let resultExternal: any = {}
 			if (result) {
@@ -86,7 +88,8 @@ export class TransactionService {
 						}
 					],
 					customer_details: {
-						first_name: user?.name || '',
+						user_id: user?.user_id || '',
+						name: user?.name || '',
 						email: user?.email || '',
 						phone: '08123456789'
 					}
@@ -118,6 +121,22 @@ export class TransactionService {
 			.set({ ...data })
 			.where('id = :id', { id })
 			.execute()
+	}
+
+	async savePayment(data: any): Promise<any> {
+		const transId = data?.transaction_id || null
+		const payment: any = await this.paymentRepository.findOneBy({ id: data.id })
+		if (payment) {
+			throw new HttpException({ status: HttpStatus.CONFLICT, error: 'Duplicate' }, HttpStatus.CONFLICT)
+		}
+		let paymentStatus = 0
+		if (data.transaction_status === 'pending') paymentStatus = 1
+		if (data.transaction_status === 'success') paymentStatus = 2
+		if (transId) {
+			await this.update(transId, { payment_status: paymentStatus, updated_at: new Date() })
+		}
+		const result = await this.paymentRepository.save(this.paymentRepository.create(data))
+		return result
 	}
 
 	async dummyPayment(): Promise<any> {

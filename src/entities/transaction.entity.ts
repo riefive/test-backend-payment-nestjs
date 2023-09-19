@@ -20,7 +20,7 @@ export class Transaction {
 	@Column({ default: 0 })
 	payment_status: number
 
-	@Column()
+	@Column({ unique: true, nullable: true })
 	token: string
 
 	@CreateDateColumn()
