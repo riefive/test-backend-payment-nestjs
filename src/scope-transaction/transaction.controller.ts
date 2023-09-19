@@ -41,7 +41,7 @@ export class TransactionController {
 	@UseGuards(JwtAuthGuard, RolesGuard)
 	@ApiBearerAuth('JWT-auth')
 	async postBuy(@Req() req: any, @Body() data: TransactionBuyObject) {
-		return await this.transactionService.create({ ...data, user_id: req.user?.userid || null })
+		return await this.transactionService.create({ ...data, user: req.user, user_id: req.user?.userid || null })
 	}
 
 	@Post('payment')

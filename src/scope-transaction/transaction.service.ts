@@ -54,6 +54,7 @@ export class TransactionService {
 	async create(data: any): Promise<any | null> {
 		try {
 			const product: any = await this.productService.findOne(data.product_id)
+			const user: any = data?.user || {}
 			if (!product || Number(data.quantity) < 1) {
 				throw new Error(HttpStatus.UNPROCESSABLE_ENTITY.toString())
 			}
@@ -69,7 +70,31 @@ export class TransactionService {
 			}
 			data.expired_at = new Date(new Date().getTime() + 1 * 24 * 60 * 60 * 1000)
 			const result = await this.transactionRepository.save(this.transactionRepository.create(data))
-			return { name: product.name, ...result }
+			let resultExternal: any = {}
+			if (result) {
+				const parameters = {
+					transaction_details: {
+						order_id: result.id,
+						gross_amount: data.total
+					},
+					item_details: [
+						{
+							id: product.id,
+							name: product.name,
+							price: product.price,
+							quantity: data.quantity
+						}
+					],
+					customer_details: {
+						first_name: user?.name || '',
+						email: user?.email || '',
+						phone: '08123456789'
+					}
+				}
+				resultExternal = await this.snapService.createTransaction(parameters)
+				if (resultExternal) await this.update(result.id, { token: resultExternal?.token })
+			}
+			return { name: product.name, ...result, token: resultExternal?.token }
 		} catch (error) {
 			let errorCode: any = HttpStatus.INTERNAL_SERVER_ERROR
 			let errorMessage = error.toString() || 'Internal Server Error'

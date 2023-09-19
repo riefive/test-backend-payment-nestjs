@@ -17,8 +17,11 @@ export class Transaction {
 	@Column()
 	total: number
 
-	@Column({ default: false })
-	is_paid: boolean
+	@Column({ default: 0 })
+	payment_status: number
+
+	@Column()
+	token: string
 
 	@CreateDateColumn()
 	created_at: Date
