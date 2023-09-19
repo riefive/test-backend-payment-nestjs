@@ -153,6 +153,20 @@ export class TransactionService {
 		return result
 	}
 
+	async checkPayment(): Promise<any> {
+		const isShow = false
+		const options: any = { where: { transaction_status: 'pending' }, take: 10, skip: 0 }
+		const [data] = await this.paymentRepository.findAndCount(options)
+		if (data && Array.isArray(data) && isShow) {
+			for (let i = 0; i < data.length; i++) {
+				const element = data[i]
+				const result = await this.snapService.transaction.status(element.transaction_id)
+				console.log(result)
+			}
+		}
+		return true
+	}
+
 	async dummyPayment(): Promise<any> {
 		const parameters = {
 			transaction_details: {
