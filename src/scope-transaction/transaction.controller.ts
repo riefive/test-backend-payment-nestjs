@@ -12,6 +12,11 @@ import { TransactionService } from './transaction.service'
 export class TransactionController {
 	constructor(private transactionService: TransactionService) {}
 
+	@Get('token')
+	async getPaymentTest() {
+		return await this.transactionService.dummyPayment()
+	}
+
 	@Get('history')
 	@Roles(UserRole.USER)
 	@UseGuards(JwtAuthGuard, RolesGuard)

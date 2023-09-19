@@ -4,14 +4,25 @@ import { Repository } from 'typeorm'
 import { differenceOfTwoDate } from '../helpers/util.timer'
 import { Transaction } from '../entities/transaction.entity'
 import { ProductService } from '../scope-product/product.service'
+import { Snap } from 'midtrans-client'
+import config from '../configs/configuration'
 
 @Injectable()
 export class TransactionService {
+	private snapService
+
 	constructor(
 		@InjectRepository(Transaction)
 		private transactionRepository: Repository<any>,
 		private productService: ProductService
-	) {}
+	) {
+		const configs = config()
+		this.snapService = new Snap({
+			isProduction: false,
+			serverKey: configs?.midtrans?.server_key,
+			clientKey: configs?.midtrans?.client_key
+		})
+	}
 
 	async findAll(params: any): Promise<any | null> {
 		const { user, product, page = 1, limit: perPage = 10 } = params
@@ -82,5 +93,16 @@ export class TransactionService {
 			.set({ ...data })
 			.where('id = :id', { id })
 			.execute()
+	}
+
+	async dummyPayment(): Promise<any> {
+		const parameters = {
+			transaction_details: {
+				order_id: 'test-transaction-123',
+				gross_amount: 200000
+			}
+		}
+		const result = await this.snapService.createTransaction(parameters)
+		return result
 	}
 }
