@@ -1,32 +1,32 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm'
+import { Entity, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm'
 
 @Entity('Payment')
 export class Payment {
-	@PrimaryGeneratedColumn()
+	@Column({ primary: true, unique: true })
 	id: string
 
 	@Column()
 	transaction_id: string
 
-	@Column()
+	@Column({ nullable: true })
 	transaction_status: string
 
-	@Column()
+	@Column({ nullable: true })
 	status_code: string
 
-	@Column()
+	@Column({ nullable: true })
 	status_message: string
 
-	@Column()
-	total: number
+	@Column({ nullable: true, default: '' })
+	total: string
 
-	@Column()
+	@Column({ nullable: true })
 	payment_type: string
 
-	@Column()
+	@Column({ nullable: true })
 	print_url: string
 
-	@Column()
+	@Column({ nullable: true })
 	transaction_time: Date
 
 	@CreateDateColumn()

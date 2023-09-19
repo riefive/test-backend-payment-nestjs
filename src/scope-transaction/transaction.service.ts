@@ -125,17 +125,31 @@ export class TransactionService {
 
 	async savePayment(data: any): Promise<any> {
 		const transId = data?.transaction_id || null
-		const payment: any = await this.paymentRepository.findOneBy({ id: data.id })
+		if (!transId) {
+			throw new HttpException({ status: HttpStatus.NOT_FOUND, error: 'Not Found' }, HttpStatus.NOT_FOUND)
+		}
+		const payment: any = await this.paymentRepository.findOneBy({ transaction_id: transId })
+		let result = null
+		if (!data.id || data.id?.trim() === '') delete data.id
+		if (Number(data.total || 0) === 0) delete data.total
+		if (!data.status_message || data.status_message?.trim() === '') delete data.status_message
 		if (payment) {
-			throw new HttpException({ status: HttpStatus.CONFLICT, error: 'Duplicate' }, HttpStatus.CONFLICT)
+			await this.paymentRepository
+				.createQueryBuilder()
+				.update()
+				.set({ ...data })
+				.where('id = :id', { id: payment.id })
+				.execute()
+			result = { ...payment, ...data }
+		} else {
+			result = await this.paymentRepository.save(this.paymentRepository.create(data))
 		}
 		let paymentStatus = 0
 		if (data.transaction_status === 'pending') paymentStatus = 1
-		if (data.transaction_status === 'success') paymentStatus = 2
+		if (data.transaction_status === 'success' || data.status_code === '406') paymentStatus = 2
 		if (transId) {
 			await this.update(transId, { payment_status: paymentStatus, updated_at: new Date() })
 		}
-		const result = await this.paymentRepository.save(this.paymentRepository.create(data))
 		return result
 	}
 
